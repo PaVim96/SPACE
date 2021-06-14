@@ -101,7 +101,7 @@ def add_bbox(x, score, z_where_scale, z_where_shift, rbox=rbox, gbox=gbox, num_o
 def bbox_in_one(x, z_pres, z_where_scale, z_where_shift, gbox=gbox):
     B, _, *img_shape = x.size()
     B, N, _ = z_pres.size()
-    z_pres = z_pres.view(-1, 1, 1, 1)
+    z_pres = z_pres.reshape(-1, 1, 1, 1)
     z_scale = z_where_scale.reshape(-1, 2)
     z_shift = z_where_shift.reshape(-1, 2)
     # argmax_cluster = argmax_cluster.view(-1, 1, 1, 1)
@@ -110,7 +110,7 @@ def bbox_in_one(x, z_pres, z_where_scale, z_where_shift, gbox=gbox):
                              torch.cat((z_scale, z_shift), dim=1),
                              torch.Size([B * N, 3, *img_shape]),
                              inverse=True)
-    bbox = (bbox.view(B, N, 3, *img_shape).sum(dim=1).clamp(0.0, 1.0) + x).clamp(0.0, 1.0)
+    bbox = (bbox.reshape(B, N, 3, *img_shape).sum(dim=1).clamp(0.0, 1.0) + x).clamp(0.0, 1.0)
     return bbox
 
 def colored_bbox_in_one_image(x, z_pres, z_where_scale, z_where_shift, gbox=gbox):
