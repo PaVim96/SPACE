@@ -29,6 +29,10 @@ def spatial_transform(image, z_where, out_dims, inverse=False):
     grid = F.affine_grid(theta, torch.Size(out_dims), align_corners=True)
     # 3. sample image from grid
     return F.grid_sample(image, grid, align_corners=True)
+<<<<<<< HEAD
+=======
+
+>>>>>>> MT-5: Adapt space_vis.py
 
 def linear_annealing(device, step, start_step, end_step, start_value, end_value):
     """
