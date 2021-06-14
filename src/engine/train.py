@@ -68,7 +68,6 @@ def train(cfg):
                 max_iterations=cfg.train.max_epochs)
     rtpt.start()
     for epoch in range(start_epoch, cfg.train.max_epochs):
-        print(f'Epoch: {epoch}')
         if end_flag:
             break
         start = time.perf_counter()
