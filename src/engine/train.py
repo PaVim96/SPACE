@@ -62,7 +62,7 @@ def train(cfg):
     vis_logger = get_vislogger(cfg)
     metric_logger = MetricLogger()
 
-    print('Start training')
+    print(f'Start training, Global Step: {global_step}, Start Epoch: {start_epoch}')
     end_flag = False
     rtpt = RTPT(name_initials='DV', experiment_name=cfg.exp_name,
                 max_iterations=cfg.train.max_epochs)
@@ -74,6 +74,7 @@ def train(cfg):
         start = time.perf_counter()
         epoch_loss = 0
         for i, data in enumerate(trainloader):
+            print(f'DataPoint: {i}')
             end = time.perf_counter()
             data_time = end - start
             start = end
