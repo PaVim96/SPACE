@@ -9,16 +9,12 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 from vis import get_vislogger
 import time
-import torch
 from torch.nn.utils import clip_grad_norm_
 from tqdm import tqdm
 from rtpt import RTPT
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> MT-3: Initial OpenAiGym data gathering
 def train(cfg):
     print('Experiment name:', cfg.exp_name)
     print('Dataset:', cfg.dataset)
@@ -62,7 +58,7 @@ def train(cfg):
     vis_logger = get_vislogger(cfg)
     metric_logger = MetricLogger()
 
-    print(f'Start training, Global Step: {global_step}, Start Epoch: {start_epoch} Max: {cfg.train.max_steps}')
+    print('Start training')
     end_flag = False
     rtpt = RTPT(name_initials='DV', experiment_name=cfg.exp_name,
                 max_iterations=cfg.train.max_epochs)
@@ -78,9 +74,7 @@ def train(cfg):
             start = end
 
             model.train()
-            # print("Pre to.device", torch.cuda.memory_summary(device=4, abbreviated=False))
             vids = data.to(cfg.device)
-            # print("Post to.device", torch.cuda.memory_summary(device=4, abbreviated=False))
             loss, log = model(vids, global_step)
             # In case of using DataParallel
             loss = loss.mean()
@@ -90,13 +84,11 @@ def train(cfg):
             epoch_loss += loss.item()
             if cfg.train.clip_norm:
                 clip_grad_norm_(model.parameters(), cfg.train.clip_norm)
-            # print("Before Step", torch.cuda.memory_summary(device=4, abbreviated=False))
 
             optimizer_fg.step()
 
             # if cfg.train.stop_bg == -1 or global_step < cfg.train.stop_bg:
             optimizer_bg.step()
-            # print("After Step", torch.cuda.memory_summary(device=4, abbreviated=False))
 
             end = time.perf_counter()
             batch_time = end - start

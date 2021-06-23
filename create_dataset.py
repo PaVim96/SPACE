@@ -14,6 +14,7 @@ from utils_rl import make_deterministic
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+import random
 
 folder_sizes = {"train": 50000, "test": 5000, "validation": 5000}
 
@@ -67,23 +68,9 @@ os.makedirs(bgr_folder, exist_ok=True)
 rgb_folder = f"aiml_atari_data/rgb/{args.game}-v0/{args.folder}"
 os.makedirs(rgb_folder, exist_ok=True)
 
-# agent_path = glob(f'agents/*{args.game}*')[0]
+agent_path = glob(f'agents/*{args.game}*')[0]
 
-# agent = load_agent(agent_path)
-
-class RandomAgent(object):
-    """The world's simplest agent!"""
-
-    def __init__(self, action_space):
-        self.action_space = action_space
-
-    def draw_action(self, observation, reward, done):
-        return self.action_space.sample()
-# for _ in range(63):  # When the game is not moving
-# for _ in range(120):  # When the game is not moving
-#     state, _, _, info, _ = env.step(env.action_space.sample())
-
-agent = RandomAgent(env)
+agent = load_agent(agent_path)
 
 limit = folder_sizes[args.folder]
 index = np.arange(limit)
