@@ -5,6 +5,7 @@ from solver import get_optimizers
 from utils import Checkpointer, MetricLogger
 import os
 import os.path as osp
+import torch
 from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 from vis import get_vislogger
@@ -52,7 +53,7 @@ def train(cfg):
         print("Can't train")
         exit(1)
     checkpointer = Checkpointer(osp.join(cfg.checkpointdir, cfg.exp_name), max_num=cfg.train.max_ckpt,
-                                load_time_consistency=cfg.load_time_consistency)
+                                load_time_consistency=cfg.load_time_consistency, add_flow=cfg.add_flow)
     model.train()
 
     optimizer_fg, optimizer_bg = get_optimizers(cfg, model)
@@ -71,8 +72,8 @@ def train(cfg):
                            purge_step=global_step)
     vis_logger = get_vislogger(cfg)
     metric_logger = MetricLogger()
-
-    print('Start training')
+    never_eval = True
+    print(f'Start training, Global Step: {global_step}, Start Epoch: {start_epoch} Max: {cfg.train.max_steps}')
     end_flag = False
     start_log = 2
     for epoch in range(start_epoch, cfg.train.max_epochs):
@@ -90,6 +91,7 @@ def train(cfg):
             loss, log = model(vids, global_step)
             # In case of using DataParallel
             loss = loss.mean()
+
             optimizer_fg.zero_grad()
             optimizer_bg.zero_grad()
             loss.backward()
@@ -128,7 +130,8 @@ def train(cfg):
                 checkpointer.save_last(model, optimizer_fg, optimizer_bg, epoch, global_step)
                 print('Saving checkpoint takes {:.4f}s.'.format(time.perf_counter() - start))
 
-            if global_step % cfg.train.eval_every == 0 and cfg.train.eval_on:
+            if (global_step % cfg.train.eval_every == 0 or never_eval) and cfg.train.eval_on:
+                never_eval = False
                 print('Validating...')
                 start = time.perf_counter()
                 eval_checkpoint = [model, optimizer_fg, optimizer_bg, epoch, global_step]
