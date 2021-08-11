@@ -14,3 +14,5 @@ torchvision~=0.6.1
 argparse~=1.4.0
 gym~=0.18.0
 scikit-video
+mushroom_rl=1.6.1
+scikit-video
